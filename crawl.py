@@ -4,12 +4,15 @@ from lxml import etree
 import re
 import pickle
 
+LOG_FILENAME = 'crawl.log'
+
+with open(LOG_FILENAME, 'w'): pass
 import logging
 # create logger
 logger = logging.getLogger('unity_crawl_application')
 logger.setLevel(logging.DEBUG)
 # create file handler
-fh = logging.FileHandler('crawl.log')
+fh = logging.FileHandler(LOG_FILENAME)
 fh.setLevel(logging.DEBUG)
 # create console handler
 ch = logging.StreamHandler()
