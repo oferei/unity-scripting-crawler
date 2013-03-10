@@ -121,9 +121,9 @@ def parseParam(param):
 
 
 data = {}
-# data['Runtime Classes'] = readTopList(URL_RUNTIME_CLASSES)
-# data['Runtime Attributes'] = readTopList(URL_RUNTIME_ATTRIBUTES)
-# data['Runtime Enumerations'] = readTopList(URL_RUNTIME_ENUMERATIONS)
+data['Runtime Classes'] = readTopList(URL_RUNTIME_CLASSES)
+data['Runtime Attributes'] = readTopList(URL_RUNTIME_ATTRIBUTES)
+data['Runtime Enumerations'] = readTopList(URL_RUNTIME_ENUMERATIONS)
 data['Editor Classes'] = readTopList(URL_EDITOR_CLASSES)
 data['Editor Attributes'] = readTopList(URL_EDITOR_ATTRIBUTES)
 data['Editor Enumerations'] = readTopList(URL_EDITOR_ENUMERATIONS)
