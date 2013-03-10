@@ -6,6 +6,7 @@ import pickle
 from web_getter import WebGetter
 
 LOG_FILENAME = 'crawl.log'
+ENABLE_WEB_CACHE = True
 
 with open(LOG_FILENAME, 'w'): pass
 import logging
@@ -58,7 +59,7 @@ BASE_URL = 'http://docs.unity3d.com/Documentation/ScriptReference/'
 
 OUTPUT_FILENAME = 'unity.pkl'
 
-webGetter = WebGetter()
+webGetter = WebGetter(enableCache=ENABLE_WEB_CACHE)
 
 def getPage(url):
 	return webGetter.getUrl(url)

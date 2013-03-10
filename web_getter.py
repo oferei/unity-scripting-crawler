@@ -10,14 +10,13 @@ import urllib2
 import socket
 
 class WebGetter(object):
-	def __init__(self, dirname=DEFAULT_DIRNAME,
-				baseTimeout=DEFAULT_BASE_TIMEOUT, timeoutFactor=DEFAULT_TIMEOUT_FACTOR, numRetries=DEFAULT_NUM_RETRIES,
-				enableCache=True):
+	def __init__(self, enableCache=True, dirname=DEFAULT_DIRNAME,
+				baseTimeout=DEFAULT_BASE_TIMEOUT, timeoutFactor=DEFAULT_TIMEOUT_FACTOR, numRetries=DEFAULT_NUM_RETRIES):
+		self.enableCache = enableCache
 		self.dirname = dirname
 		self.baseTimeout = baseTimeout
 		self.timeoutFactor = timeoutFactor
 		self.numRetries = numRetries
-		self.enableCache = enableCache
 
 		if self.enableCache:
 			self.createCacheDir()
