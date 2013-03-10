@@ -1,5 +1,8 @@
 *.py[cod]
 
+# Program log
+*.log
+
 # C extensions
 *.so
 

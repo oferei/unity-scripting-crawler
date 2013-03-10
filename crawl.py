@@ -4,6 +4,24 @@ from lxml import etree
 import re
 import pickle
 
+import logging
+# create logger
+logger = logging.getLogger('unity_crawl_application')
+logger.setLevel(logging.DEBUG)
+# create file handler
+fh = logging.FileHandler('crawl.log')
+fh.setLevel(logging.DEBUG)
+# create console handler
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+# create formatter and add it to the handlers
+formatter = logging.Formatter('%(asctime)s - %(levelname)s: %(message)s')
+fh.setFormatter(formatter)
+ch.setFormatter(formatter)
+# add the handlers to the logger
+logger.addHandler(fh)
+logger.addHandler(ch)
+
 ### Class sections:
 # Variables
 # Constructors
@@ -56,7 +74,7 @@ def readTopList(url):
 	return classes
 
 def readClass(url, name):
-	print 'class: ' + name
+	logger.info('class: ' + name)
 	page = html.fromstring(urllib2.urlopen(url).read())
 	members = {}
 	for sect in page.xpath('//div[@class="script-section-softheading"]'):
@@ -65,9 +83,9 @@ def readClass(url, name):
 	return members
 
 def readClassSection(node, name):
-	print '  section: ' + name
+	logger.info('  section: ' + name)
 	if name.startswith('Inherited '):
-		print '    skipped (inherited)'
+		logger.info('    skipped (inherited)')
 		return {}
 	members = {}
 	for link in node.xpath('./following-sibling::table[position()=1]//td[@class="class-member-list-name"]/a'):
@@ -81,16 +99,16 @@ def readClassSection(node, name):
 	return members
 
 def readFunction(url, name):
-	print '    function: ' + name
+	logger.info('    function: ' + name)
 	page = html.fromstring(urllib2.urlopen(url).read())
 	funcDefs = []
 	for node in page.xpath('//div[@class="manual-entry"]/h3[position()=1]'):
 		text = node.text_content().strip()
-		print '      def: ' + text
+		logger.info('      def: ' + text)
 		m = re.search(r'%s(\.<\S+>)?\s+\(\s*([^)]*)\s*\)\s*:\s*(\S+)' % re.escape(name), text)
 		if not m:
 			# raise Exception('Could not parse function definition: ' + text)
-			print 'ERROR: Could not parse function definition: ' + text
+			logger.error('Could not parse function definition: ' + text)
 			continue
 		template = m.group(1)
 		params = re.split(r'\s*,\s*', m.group(2))
@@ -103,10 +121,10 @@ def readFunction(url, name):
 			'params': params,
 			'returnType': returnType
 		}
-		print '      template: ' + str(template)
-		print '      params: ' + str(params)
-		print '      returnType: ' + returnType
-		print '      funcDef: ' + str(funcDef)
+		logger.info('      template: ' + str(template))
+		logger.info('      params: ' + str(params))
+		logger.info('      returnType: ' + returnType)
+		logger.info('      funcDef: ' + str(funcDef))
 		funcDefs.append(funcDef)
 	return funcDefs
 
