@@ -103,13 +103,15 @@ def readFunction(url, name):
 	page = html.fromstring(getPage(url))
 	funcDefs = []
 	for node in page.xpath('//div[@class="manual-entry"]/h3[position()=1]'):
-		text = node.text_content().strip()
-		logger.debug('      def: ' + text)
-		m = re.search(r'%s(\.<\S+>)?\s+\(\s*([^)]*)\s*\)\s*:\s*(\S+)' % re.escape(name), text)
+		funcDefs.append(parseFuncDef(node.text_content().strip(), name))
+	return funcDefs
+
+def parseFuncDef(paramDef, name):
+	logger.debug('      def: ' + paramDef)
+	try:
+		m = re.search(r'%s(\.<\S+>)?\s+\(\s*([^)]*)\s*\)\s*:\s*(\S+)' % re.escape(name), paramDef)
 		if not m:
-			# raise Exception('Could not parse function definition: ' + text)
-			logger.error('Could not parse function definition: ' + text)
-			continue
+			raise Exception('Could not parse function definition: ' + paramDef)
 		template = m.group(1)
 		params = re.split(r'\s*,\s*', m.group(2))
 		if params == ['']: params = []
@@ -119,12 +121,13 @@ def readFunction(url, name):
 		logger.info('      template: ' + str(template))
 		logger.info('      params: ' + str(params))
 		logger.info('      returnType: ' + returnType)
-		funcDefs.append({
+		return {
 			'template': template,
 			'params': params,
 			'returnType': returnType
-		})
-	return funcDefs
+		}
+	except Exception, e:
+		logger.error('Could not parse function definition: ' + paramDef + ' (' + str(e) + ')')
 
 def parseParam(param):
 	name, type_ = re.split(r'\s*:\s*', param)
