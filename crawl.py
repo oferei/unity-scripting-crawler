@@ -19,7 +19,10 @@ import pickle
 # Inherited Class variables
 # Inherited Class Functions
 
-## enums sections
+### Attribute sections
+# Constructors
+
+### Enumeration sections
 # Values
 
 URL_RUNTIME_CLASSES = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.html'
