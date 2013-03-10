@@ -1,5 +1,7 @@
 *.py[cod]
 
+webcache
+
 # Program log
 *.log
 

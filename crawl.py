@@ -1,8 +1,9 @@
-import urllib2
 from lxml import html
 from lxml import etree
 import re
 import pickle
+
+from web_getter import WebGetter
 
 LOG_FILENAME = 'crawl.log'
 
@@ -57,15 +58,10 @@ BASE_URL = 'http://docs.unity3d.com/Documentation/ScriptReference/'
 
 OUTPUT_FILENAME = 'unity.pkl'
 
-def getPage(url, timeout1=5, timeoutFactor=2, retries=10):
-	timeout = timeout1
-	for _i in xrange(retries):
-		try:
-			return urllib2.urlopen(url, timeout=timeout).read()
-		except urllib2.URLError, e:
-			# retry
-			timeout *= timeoutFactor
-	raise e
+webGetter = WebGetter()
+
+def getPage(url):
+	return webGetter.getUrl(url)
 
 def readTopList(url):
 	page = html.fromstring(getPage(url))
@@ -78,7 +74,7 @@ def readTopList(url):
 
 def readClass(url, name):
 	logger.info('class: ' + name)
-	page = html.fromstring(urllib2.urlopen(url).read())
+	page = html.fromstring(getPage(url))
 	members = {}
 	for sect in page.xpath('//div[@class="script-section-softheading"]'):
 		sectName = sect.text.strip()
@@ -103,7 +99,7 @@ def readClassSection(node, name):
 
 def readFunction(url, name):
 	logger.info('    function: ' + name)
-	page = html.fromstring(urllib2.urlopen(url).read())
+	page = html.fromstring(getPage(url))
 	funcDefs = []
 	for node in page.xpath('//div[@class="manual-entry"]/h3[position()=1]'):
 		text = node.text_content().strip()
