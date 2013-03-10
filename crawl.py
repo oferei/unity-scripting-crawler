@@ -104,7 +104,7 @@ def readFunction(url, name):
 	funcDefs = []
 	for node in page.xpath('//div[@class="manual-entry"]/h3[position()=1]'):
 		text = node.text_content().strip()
-		logger.info('      def: ' + text)
+		logger.debug('      def: ' + text)
 		m = re.search(r'%s(\.<\S+>)?\s+\(\s*([^)]*)\s*\)\s*:\s*(\S+)' % re.escape(name), text)
 		if not m:
 			# raise Exception('Could not parse function definition: ' + text)
@@ -116,16 +116,14 @@ def readFunction(url, name):
 		# params = [parseParam(x) for x in params]
 		params = map(parseParam, params)
 		returnType = m.group(3)
-		funcDef = {
-			'template': template,
-			'params': params,
-			'returnType': returnType
-		}
 		logger.info('      template: ' + str(template))
 		logger.info('      params: ' + str(params))
 		logger.info('      returnType: ' + returnType)
-		logger.info('      funcDef: ' + str(funcDef))
-		funcDefs.append(funcDef)
+		funcDefs.append({
+			'template': template,
+			'params': params,
+			'returnType': returnType
+		})
 	return funcDefs
 
 def parseParam(param):
@@ -135,7 +133,11 @@ def parseParam(param):
 		type_, default = typeParts
 	else:
 		default = None
-	return (name, type_, default)
+	return {
+		'name': name,
+		'type': type_,
+		'default': default
+	}
 
 
 data = {}
