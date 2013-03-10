@@ -4,15 +4,20 @@ from lxml import etree
 import re
 import pickle
 
-## class sections:
+### Class sections:
 # Variables
 # Constructors
 # Functions
+# Messages Sent
 # Class Variables
 # Class Functions
 ## Inherited members
+# Inherited Variables
 # Inherited Constructors
 # Inherited Functions
+# Inherited Messages Sent
+# Inherited Class variables
+# Inherited Class Functions
 
 ## enums sections
 # Values
