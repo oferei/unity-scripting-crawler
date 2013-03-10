@@ -13,4 +13,4 @@ Retrieved sections:
  * Attributes
  * Enumerations
 
- Grabs variable names and function definitions.
+Grabs variable names and function definitions.
