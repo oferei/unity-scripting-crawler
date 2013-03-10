@@ -36,12 +36,14 @@ BASE_URL = 'http://docs.unity3d.com/Documentation/ScriptReference/'
 
 OUTPUT_FILENAME = 'unity.pkl'
 
-def getPage(url, timeout=5, retries=10):
+def getPage(url, timeout1=5, timeoutFactor=2, retries=10):
+	timeout = timeout1
 	for _i in xrange(retries):
 		try:
 			return urllib2.urlopen(url, timeout=timeout).read()
 		except urllib2.URLError, e:
-			pass # retry
+			# retry
+			timeout *= timeoutFactor
 	raise e
 
 def readTopList(url):
@@ -87,7 +89,9 @@ def readFunction(url, name):
 		print '      def: ' + text
 		m = re.search(r'%s(\.<\S+>)?\s+\(\s*([^)]*)\s*\)\s*:\s*(\S+)' % re.escape(name), text)
 		if not m:
-			raise Exception('Could not parse function definition: ' + text)
+			# raise Exception('Could not parse function definition: ' + text)
+			print 'ERROR: Could not parse function definition: ' + text
+			continue
 		template = m.group(1)
 		params = re.split(r'\s*,\s*', m.group(2))
 		if params == ['']: params = []
@@ -117,9 +121,9 @@ def parseParam(param):
 
 
 data = {}
-data['Runtime Classes'] = readTopList(URL_RUNTIME_CLASSES)
-data['Runtime Attributes'] = readTopList(URL_RUNTIME_ATTRIBUTES)
-data['Runtime Enumerations'] = readTopList(URL_RUNTIME_ENUMERATIONS)
+# data['Runtime Classes'] = readTopList(URL_RUNTIME_CLASSES)
+# data['Runtime Attributes'] = readTopList(URL_RUNTIME_ATTRIBUTES)
+# data['Runtime Enumerations'] = readTopList(URL_RUNTIME_ENUMERATIONS)
 data['Editor Classes'] = readTopList(URL_EDITOR_CLASSES)
 data['Editor Attributes'] = readTopList(URL_EDITOR_ATTRIBUTES)
 data['Editor Enumerations'] = readTopList(URL_EDITOR_ENUMERATIONS)
