@@ -62,6 +62,7 @@ def readClassSection(node, name):
 	members = {}
 	for link in node.xpath('./following-sibling::table[position()=1]//td[@class="class-member-list-name"]/a'):
 		funcName = link.text.strip()
+		funcName = funcName.replace('operator ', '')
 		funcUrl = link.get('href')
 		if name in ['Variables', 'Class Variables', 'Values']:
 			members[funcName] = None
@@ -76,7 +77,7 @@ def readFunction(url, name):
 	for node in page.xpath('//div[@class="manual-entry"]/h3[position()=1]'):
 		text = node.text_content().strip()
 		print '      def: ' + text
-		m = re.search(r'\b%s(\.<\S+>)?\s+\(\s*([^)]*)\s*\)\s*:\s*(\S+)' % re.escape(name), text)
+		m = re.search(r'%s(\.<\S+>)?\s+\(\s*([^)]*)\s*\)\s*:\s*(\S+)' % re.escape(name), text)
 		if not m:
 			raise Exception('Could not parse function definition: ' + text)
 		template = m.group(1)
