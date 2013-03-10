@@ -37,7 +37,7 @@ class WebGetter(object):
 				if self.enableCache:
 					self.writeCache(url, data)
 				return data
-			except urllib2.URLError, e:
+			except (urllib2.URLError, socket.timeout), e:
 				# retry
 				timeout *= self.timeoutFactor
 		raise e
