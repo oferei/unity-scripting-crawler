@@ -5,8 +5,21 @@ import pickle
 
 from web_getter import WebGetter
 
+OUTPUT_FILENAME = 'unity.pkl'
 LOG_FILENAME = 'crawl.log'
 ENABLE_WEB_CACHE = True
+EXCLUDE_INHERITED = False
+
+URL_RUNTIME_CLASSES = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.html'
+URL_RUNTIME_ATTRIBUTES = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Attributes.html'
+URL_RUNTIME_ENUMERATIONS = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Enumerations.html'
+URL_EDITOR_CLASSES = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Editor_Classes.html'
+URL_EDITOR_ATTRIBUTES = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Editor_Attributes.html'
+URL_EDITOR_ENUMERATIONS = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Editor_Enumerations.html'
+
+BASE_URL = 'http://docs.unity3d.com/Documentation/ScriptReference/'
+
+
 
 with open(LOG_FILENAME, 'w'): pass
 import logging
@@ -27,6 +40,8 @@ ch.setFormatter(formatter)
 logger.addHandler(fh)
 logger.addHandler(ch)
 
+webGetter = WebGetter(enableCache=ENABLE_WEB_CACHE)
+
 ### Class sections:
 # Variables
 # Constructors
@@ -39,7 +54,7 @@ logger.addHandler(ch)
 # Inherited Constructors
 # Inherited Functions
 # Inherited Messages Sent
-# Inherited Class variables
+# Inherited Class Variables
 # Inherited Class Functions
 
 ### Attribute sections
@@ -47,19 +62,6 @@ logger.addHandler(ch)
 
 ### Enumeration sections
 # Values
-
-URL_RUNTIME_CLASSES = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.html'
-URL_RUNTIME_ATTRIBUTES = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Attributes.html'
-URL_RUNTIME_ENUMERATIONS = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Enumerations.html'
-URL_EDITOR_CLASSES = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Editor_Classes.html'
-URL_EDITOR_ATTRIBUTES = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Editor_Attributes.html'
-URL_EDITOR_ENUMERATIONS = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Editor_Enumerations.html'
-
-BASE_URL = 'http://docs.unity3d.com/Documentation/ScriptReference/'
-
-OUTPUT_FILENAME = 'unity.pkl'
-
-webGetter = WebGetter(enableCache=ENABLE_WEB_CACHE)
 
 def getPage(url):
 	return webGetter.getUrl(url)
@@ -84,15 +86,16 @@ def readClass(url, name):
 
 def readClassSection(node, name):
 	logger.info('  section: ' + name)
-	if name.startswith('Inherited '):
+	if EXCLUDE_INHERITED and name.startswith('Inherited '):
 		logger.info('    skipped (inherited)')
 		return {}
 	members = {}
 	for link in node.xpath('./following-sibling::table[position()=1]//td[@class="class-member-list-name"]/a'):
 		funcName = link.text.strip()
-		funcName = funcName.replace('operator ', '')
+		if funcName.startswith('operator '):
+			continue
 		funcUrl = link.get('href')
-		if name in ['Variables', 'Class Variables', 'Values']:
+		if name in ['Variables', 'Class Variables', 'Inherited Variables', 'Inherited Class Variables', 'Values']:
 			members[funcName] = None
 		else:
 			members[funcName] = readFunction(BASE_URL + funcUrl, funcName)
