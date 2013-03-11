@@ -6,7 +6,7 @@ to index class variables and functions.
 One use of this data is the generation of [Unity Completions](https://github.com/oferei/sublime-unity-completions),
 a plugin for Sublime Text 2 which provides auto-completion.
 
-The output file unity.pkl is included for convenience.
+The output file _unity.pkl_ is included for convenience.
 
 ## Output Format
 
