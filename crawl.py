@@ -8,7 +8,8 @@ from web_getter import WebGetter
 OUTPUT_FILENAME = 'unity.pkl'
 LOG_FILENAME = 'crawl.log'
 ENABLE_WEB_CACHE = True
-EXCLUDE_INHERITED = False
+EXCLUDE_INHERITED = True
+EXCLUDE_INHERITED_STATIC = True
 
 URL_RUNTIME_CLASSES = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.html'
 URL_RUNTIME_ATTRIBUTES = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Attributes.html'
@@ -88,6 +89,9 @@ def readClassSection(node, name):
 	logger.info('  section: ' + name)
 	if EXCLUDE_INHERITED and name.startswith('Inherited '):
 		logger.info('    skipped (inherited)')
+		return {}
+	if EXCLUDE_INHERITED_STATIC and name.startswith('Inherited Class '):
+		logger.info('    skipped (inherited static)')
 		return {}
 	members = {}
 	for link in node.xpath('./following-sibling::table[position()=1]//td[@class="class-member-list-name"]/a'):
