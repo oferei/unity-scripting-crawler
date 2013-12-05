@@ -11,12 +11,12 @@ ENABLE_WEB_CACHE = True
 EXCLUDE_INHERITED = True
 EXCLUDE_INHERITED_STATIC = True
 
-URL_RUNTIME_CLASSES = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.html'
-URL_RUNTIME_ATTRIBUTES = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Attributes.html'
-URL_RUNTIME_ENUMERATIONS = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Enumerations.html'
-URL_EDITOR_CLASSES = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Editor_Classes.html'
-URL_EDITOR_ATTRIBUTES = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Editor_Attributes.html'
-URL_EDITOR_ENUMERATIONS = 'http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Editor_Enumerations.html'
+CLASS_RUNTIME_CLASSES = 'classRuntime'
+CLASS_RUNTIME_ATTRIBUTES = 'attrRuntime'
+CLASS_RUNTIME_ENUMERATIONS = 'enumRuntime'
+CLASS_EDITOR_CLASSES = 'classEditor'
+CLASS_EDITOR_ATTRIBUTES = 'attrEditor'
+CLASS_EDITOR_ENUMERATIONS = 'enumEditor'
 
 BASE_URL = 'http://docs.unity3d.com/Documentation/ScriptReference/'
 
@@ -67,10 +67,10 @@ webGetter = WebGetter(enableCache=ENABLE_WEB_CACHE)
 def getPage(url):
 	return webGetter.getUrl(url)
 
-def readTopList(url):
-	page = html.fromstring(getPage(url))
+def readTopList(domClass):
+	page = html.fromstring(getPage(BASE_URL))
 	classes = {}
-	for link in page.xpath('//a[@class="classlink"]'):
+	for link in page.xpath('//li[@class="' + domClass + '"]/a'):
 		className = link.text.strip()
 		classUrl = link.get('href')
 		classes[className] = readClass(BASE_URL + classUrl, className)
@@ -150,11 +150,11 @@ def parseParam(param):
 
 
 data = {}
-data['Runtime Classes'] = readTopList(URL_RUNTIME_CLASSES)
-data['Runtime Attributes'] = readTopList(URL_RUNTIME_ATTRIBUTES)
-data['Runtime Enumerations'] = readTopList(URL_RUNTIME_ENUMERATIONS)
-data['Editor Classes'] = readTopList(URL_EDITOR_CLASSES)
-data['Editor Attributes'] = readTopList(URL_EDITOR_ATTRIBUTES)
-data['Editor Enumerations'] = readTopList(URL_EDITOR_ENUMERATIONS)
+data['Runtime Classes'] = readTopList(CLASS_RUNTIME_CLASSES)
+data['Runtime Attributes'] = readTopList(CLASS_RUNTIME_ATTRIBUTES)
+data['Runtime Enumerations'] = readTopList(CLASS_RUNTIME_ENUMERATIONS)
+data['Editor Classes'] = readTopList(CLASS_EDITOR_CLASSES)
+data['Editor Attributes'] = readTopList(CLASS_EDITOR_ATTRIBUTES)
+data['Editor Enumerations'] = readTopList(CLASS_EDITOR_ENUMERATIONS)
 
 pickle.dump(data, open(OUTPUT_FILENAME, 'wb'), pickle.HIGHEST_PROTOCOL)
