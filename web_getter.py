@@ -40,6 +40,7 @@ class WebGetter(object):
 			except (urllib2.URLError, socket.timeout), e:
 				# retry
 				timeout *= self.timeoutFactor
+		print 'Could not get URL:', url
 		raise e
 
 	def getCacheFilename(self, url):
