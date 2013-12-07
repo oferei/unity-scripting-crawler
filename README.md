@@ -1,10 +1,10 @@
 # Unity Scripting Crawler
 
-Crawls [Unity Scripting Reference](http://docs.unity3d.com/Documentation/ScriptReference/index.html)
+Crawls [Unity Scripting Reference](http://docs.unity3d.com/Documentation/ScriptReference)
 to index class variables and functions.
 
 One use of this data is the generation of [Unity Completions](https://github.com/oferei/sublime-unity-completions),
-a plugin for Sublime Text 2 which provides auto-completion.
+a plugin for Sublime Text which provides auto-completion.
 
 The output file _unity.pkl_ is included for convenience.
 
