@@ -9,7 +9,6 @@ OUTPUT_FILENAME = 'unity.pkl'
 LOG_FILENAME = 'crawl.log'
 ENABLE_WEB_CACHE = True
 EXCLUDE_INHERITED = True
-EXCLUDE_INHERITED_STATIC = True
 
 CLASS_RUNTIME_CLASSES = 'classRuntime'
 CLASS_RUNTIME_ATTRIBUTES = 'attrRuntime'
@@ -45,18 +44,24 @@ webGetter = WebGetter(enableCache=ENABLE_WEB_CACHE)
 
 ### Class sections:
 # Variables
+# Static Variables
 # Constructors
 # Functions
-# Messages Sent
+# Static Functions
+# Operators
+# Messages
 # Class Variables
 # Class Functions
 ## Inherited members
-# Inherited Variables
-# Inherited Constructors
-# Inherited Functions
-# Inherited Messages Sent
-# Inherited Class Variables
-# Inherited Class Functions
+# Variables
+# Static Variables
+# Constructors
+# Functions
+# Static Functions
+# Operators
+# Messages
+# Class Variables
+# Class Functions
 
 ### Attribute sections
 # Constructors
@@ -76,57 +81,71 @@ def readTopList(domClass):
 		classes[className] = readClass(BASE_URL + classUrl, className)
 	return classes
 
-def readClass(url, name):
-	logger.info('class: ' + name)
+def readClass(url, className):
+	logger.info('class: ' + className)
 	page = html.fromstring(getPage(url))
 	members = {}
-	for sect in page.xpath('//div[@class="script-section-softheading"]'):
-		sectName = sect.text.strip()
-		members.update(readClassSection(sect, sectName))
+	sectName = ''
+	sectSkipped = False
+	logger.info('  section: *')
+	for div in page.xpath('//div'):
+		if div.get('class') == "script-section-hardheading":
+			sectName = div.text.strip()
+			logger.info('  section: ' + sectName)
+			if EXCLUDE_INHERITED:
+				sectSkipped = sectName.startswith('Inherited ')
+				if sectSkipped:
+					logger.info('    skipped (inherited)')
+		elif div.get('class') == "script-section-softheading" and not sectSkipped:
+			subSectName = div.text.strip()
+			members.update(readClassSubSection(div, subSectName))
 	return members
 
-def readClassSection(node, name):
-	logger.info('  section: ' + name)
-	if EXCLUDE_INHERITED and name.startswith('Inherited '):
-		logger.info('    skipped (inherited)')
-		return {}
-	if EXCLUDE_INHERITED_STATIC and name.startswith('Inherited Class '):
-		logger.info('    skipped (inherited static)')
+def readClassSubSection(node, subSectName):
+	logger.info('    subsection: ' + subSectName)
+	if EXCLUDE_INHERITED and subSectName.startswith('Inherited '):
+		logger.info('      skipped (inherited)')
 		return {}
 	members = {}
-	for link in node.xpath('./following-sibling::table[position()=1]//td[@class="class-member-list-name"]/a'):
+	for link in node.xpath('./following-sibling::table[position()=1]//th[@class="memberTableName"]/a'):
 		funcName = link.text.strip()
 		if funcName.startswith('operator '):
 			continue
 		funcUrl = link.get('href')
-		if name in ['Variables', 'Class Variables', 'Inherited Variables', 'Inherited Class Variables', 'Values']:
+		if subSectName in ['Variables', 'Class Variables', 'Inherited Variables', 'Inherited Class Variables', 'Values', 'Static Variables']:
+			logger.info('      member: ' + funcName)
 			members[funcName] = None
 		else:
 			members[funcName] = readFunction(BASE_URL + funcUrl, funcName)
 	return members
 
-def readFunction(url, name):
-	logger.info('    function: ' + name)
+def readFunction(url, funcName):
+	logger.info('      function: ' + funcName)
 	page = html.fromstring(getPage(url))
 	funcDefs = []
-	for node in page.xpath('//div[@class="manual-entry"]/h3[position()=1]'):
-		funcDefs.append(parseFuncDef(node.text_content().strip(), name))
+	for node in page.xpath('//div[@class="sigBlockJS"]'):
+		paramDef = node.text_content().strip()
+		paramDef = paramDef.replace('\r\n', '').replace('\n', '')
+		if paramDef:
+			funcDefs.append(parseFuncDef(paramDef, funcName))
 	return funcDefs
 
-def parseFuncDef(paramDef, name):
-	logger.debug('      def: ' + paramDef)
+def parseFuncDef(paramDef, funcName):
+	logger.debug('        def: ' + paramDef)
 	try:
-		m = re.search(r'%s(\.<\S+>)?\s+\(\s*([^)]*)\s*\)\s*:\s*(\S+)' % re.escape(name), paramDef)
+		#              name .<temp>?    (   params     )   : returnType
+		m = re.search(r'%s(\.<\S+>)?\s*\(\s*([^)]*)\s*\)\s*:?\s*(\S+)?' % re.escape(funcName), paramDef)
 		if not m:
 			raise Exception('Could not parse function definition: ' + paramDef)
 		template = m.group(1)
-		params = m.group(2).split(', ')
+		#params = m.group(2).split(', ')
+		params = re.split(r',\s*', m.group(2))
 		if params == ['']: params = []
 		params = map(parseParam, params)
 		returnType = m.group(3)
-		logger.info('      template: ' + str(template))
-		logger.info('      params: ' + str(params))
-		logger.info('      returnType: ' + returnType)
+		logger.info('        template: ' + str(template))
+		logger.info('        params: ' + str(params))
+		logger.info('        returnType: ' + str(returnType))
 		return {
 			'template': template,
 			'params': params,
@@ -136,14 +155,17 @@ def parseFuncDef(paramDef, name):
 		logger.error('Could not parse function definition: ' + paramDef + ' (' + str(e) + ')')
 
 def parseParam(param):
-	name, type_ = re.split(r'\s*:\s*', param)
+	try:
+		paramName, type_ = re.split(r'\s*:\s*', param)
+	except Exception, e:
+		raise Exception('Could not parse function param: ' + param)
 	typeParts = re.split(r'\s*=\s*', type_)
 	if len(typeParts) == 2:
 		type_, default = typeParts
 	else:
 		default = None
 	return {
-		'name': name,
+		'name': paramName,
 		'type': type_,
 		'default': default
 	}
