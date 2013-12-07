@@ -138,7 +138,6 @@ def parseFuncDef(paramDef, funcName):
 		if not m:
 			raise Exception('Could not parse function definition: ' + paramDef)
 		template = m.group(1)
-		#params = m.group(2).split(', ')
 		params = re.split(r',(?![,\]])\s*', m.group(2))
 		if params == ['']: params = []
 		params = map(parseParam, params)
