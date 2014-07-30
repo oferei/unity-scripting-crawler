@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from lxml import html
 from lxml import etree
 import re
