@@ -1,9 +1,9 @@
 # Unity Scripting Crawler
 
-Crawls [Unity Scripting Reference](http://docs.unity3d.com/Documentation/ScriptReference)
-to index class variables and functions.
+Crawls Unity Scripting Reference to index class variables and functions.
+In this version of the crawler the reference is read locally from a Unity installation.
 
-One use of this data is the generation of [Unity Completions](https://github.com/oferei/sublime-unity-completions),
+This data is used for the generation of [Unity Completions](https://github.com/oferei/sublime-unity-completions),
 a plugin for Sublime Text which provides auto-completion.
 
 The output file _unity.pkl_ is included for convenience.
@@ -19,7 +19,7 @@ Output file is a pickle with the following hierarchy:
 			Function definition is a dictionary with the following keys:
 				1. "template" - Template postfix if relevant (e.g. ".<T>") or None
 				* "params" - List of function parameters, which are dictionaries with the following keys:
-					1. "name" - Name of parameter
+					1. "name" - Name of parameter (could be None)
 					* "type" - Type of parameter
 					* "default" - Default value or None
 				* "returnType" - Return type
@@ -28,6 +28,6 @@ Output file is a pickle with the following hierarchy:
 
 The following sections are retrieved:
 
-* UnityEngine
-* UnityEditor
-* Other
+* UnityEngine Classes, Attributes and Enumerations
+* UnityEditor Classes, Attributes and Enumerations
+* Other Classes
