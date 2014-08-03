@@ -223,12 +223,23 @@ class ScriptReferenceReader(object):
 			funcDef = node.text_content().strip().replace('\r\n', '').replace('\n', '')
 			if funcDef:
 				defFound = True
+				if self.isFunctionGeneric(node):
+					funcDef = funcDef.replace('(', '.<T>(', 1)
 				yield funcDef
 		if not defFound:
 			for node in page.xpath('//h1'):
 				funcDef = node.text_content().strip().replace('\r\n', '').replace('\n', '')
 				if funcDef:
 					yield self.convertHeaderToFuncDef(funcDef)
+
+	@classmethod
+	def isFunctionGeneric(cls, funcDefNode):
+		descriptionNode = funcDefNode.xpath('./parent::div/parent::div[@class="subsection"]/following-sibling::div[@class="subsection"]/h2[text()="Description"]')
+		if descriptionNode:
+			description = descriptionNode[0].xpath('./following-sibling::p')[0].text
+			return description and description.startswith('Generic version.')
+		else:
+			return False
 
 	@classmethod
 	def convertHeaderToFuncDef(cls, funcDef):
