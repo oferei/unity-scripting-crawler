@@ -3,8 +3,10 @@
 Crawls Unity Scripting Reference to index class variables and functions.
 In this version of the crawler the reference is read locally from a Unity installation.
 
-This data is used for the generation of [Unity Completions](https://github.com/oferei/sublime-unity-completions),
-a plugin for Sublime Text which provides auto-completion.
+This data is used for the generation of
+[Unity Completions](https://github.com/oferei/sublime-unity-completions)
+and [Unity Completions Light](https://github.com/oferei/sublime-unity-completions-light),
+two plugins for Sublime Text which provides auto-completion.
 
 The output file _unity.pkl_ is included for convenience.
 
