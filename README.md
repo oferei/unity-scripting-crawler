@@ -28,9 +28,6 @@ Output file is a pickle with the following hierarchy:
 
 The following sections are retrieved:
 
-* [Runtime Classes](http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.html)
- * [Attributes](http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Attributes.html)
- * [Enumerations](http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Enumerations.html)
-* [Editor Classes](http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Editor_Classes.html)
- * [Attributes](http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Editor_Attributes.html)
- * [Enumerations](http://docs.unity3d.com/Documentation/ScriptReference/20_class_hierarchy.Editor_Enumerations.html)
+* UnityEngine
+* UnityEditor
+* Other
