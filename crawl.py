@@ -266,8 +266,10 @@ class ScriptReferenceReader(object):
 			raise Exception('Function definition structure does not match: ' + funcDef)
 		template = m.group(1)
 		# split by commas but ignore: "[,,,,]"
-		params = re.split(r',(?![,\]])\s*', m.group(2))
+		# allow commas inside <> and inside []
+		params = re.findall(r'[^,<\[]+(?:\<[^>]*\>)?(?:\[[^\]]*\])?[^,]*', m.group(2))
 		if params == ['']: params = []
+		params = map(str.strip, params)
 		params = map(cls.parseParam, params)
 		returnType = m.group(3)
 		logger.info('           template: ' + str(template))
