@@ -16,7 +16,7 @@ OUTPUT_SECTIONS = set(('Runtime Classes', 'Runtime Interfaces', 'Runtime Enumera
 
 VARIABLES_SECTIONS = set(['Variables', 'Static Variables'])
 MESSAGES_SECTIONS = set(['Messages'])
-FUNCTIONS_SECTIONS = set(['Constructors', 'Functions', 'Static Functions', 'Operators'])
+FUNCTIONS_SECTIONS = set(['Constructors', 'Public Functions', 'Static Functions', 'Protected Functions', 'Operators'])
 
 with open(LOG_FILENAME, 'w'): pass
 import logging
