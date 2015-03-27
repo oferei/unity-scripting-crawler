@@ -15,7 +15,7 @@ BASE_DIR = '/Applications/Unity/Documentation/en'
 OUTPUT_SECTIONS = set(('Runtime Classes', 'Runtime Interfaces', 'Runtime Enumerations', 'Runtime Attributes', 'Editor Classes', 'Editor Interfaces', 'Editor Enumerations', 'Editor Attributes', 'Other Classes'))
 
 VARIABLES_SECTIONS = set(['Variables', 'Static Variables'])
-MESSAGES_SECTIONS = set(['Messages'])
+MESSAGES_SECTIONS = set(['Messages', 'Delegates'])
 FUNCTIONS_SECTIONS = set(['Constructors', 'Public Functions', 'Static Functions', 'Protected Functions', 'Operators'])
 
 with open(LOG_FILENAME, 'w'): pass
