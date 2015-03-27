@@ -251,10 +251,24 @@ class ScriptReferenceReader(object):
 
 	@classmethod
 	def fixFuncDef(cls, funcDef, url, funcName):
-		if funcName == 'Vector3' and url == 'Vector4-operator_Vector4.html':
-			return 'Vector3()'
+		if funcName == 'Vector2' and url == 'Vector4-operator_Vector4.html':
+			return 'Vector2()'
 		if funcName == 'Unshift' and url == 'Array.Unshift.html':
 			return 'Unshift()'
+		if funcName == 'Font' and url == 'Font.TextureChangedDelegate.html':
+			return 'Font()'
+		if funcName == 'OnStateEnter' and url == 'StateMachineBehaviour.OnStateEnter.html':
+			return 'StateMachineBehaviour.OnStateEnter(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
+		if funcName == 'OnStateExit' and url == 'StateMachineBehaviour.OnStateExit.html':
+			return 'StateMachineBehaviour.OnStateExit(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
+		if funcName == 'OnStateIK' and url == 'StateMachineBehaviour.OnStateIK.html':
+			return 'StateMachineBehaviour.OnStateIK(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
+		if funcName == 'OnStateMove' and url == 'StateMachineBehaviour.OnStateMove.html':
+			return 'StateMachineBehaviour.OnStateMove(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
+		if funcName == 'OnStateUpdate' and url == 'StateMachineBehaviour.OnStateUpdate.html':
+			return 'StateMachineBehaviour.OnStateUpdate(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
+		if funcName == 'OnPreprocessAnimation' and url == 'AssetPostprocessor.OnPreprocessAnimation.html':
+			return 'OnPreprocessAnimation()'
 		return funcDef
 
 	@classmethod
