@@ -10,7 +10,7 @@ OUTPUT_FILENAME = 'unity.pkl'
 LOG_FILENAME = 'crawl.log'
 EXCLUDE_INHERITED = True
 
-BASE_DIR = '/Applications/Unity/Documentation/html/en'
+BASE_DIR = '/Applications/Unity/Documentation/en'
 
 OUTPUT_SECTIONS = set(('Runtime Classes', 'Runtime Attributes', 'Runtime Enumerations', 'Editor Classes', 'Editor Attributes', 'Editor Enumerations', 'Other Classes'))
 
@@ -67,7 +67,7 @@ logger.addHandler(ch)
 
 class ScriptReferenceReader(object):
 
-	CLASS_LIST_JS_FILE = 'StaticFiles/classList.js'
+	CLASS_LIST_JS_FILE = 'ScriptReference/docdata/toc.js'
 	REFERENCE_DIR = 'ScriptReference'
 
 	BUG_WORKAROUNDS = {
