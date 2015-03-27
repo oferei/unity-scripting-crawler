@@ -12,7 +12,7 @@ EXCLUDE_INHERITED = True
 
 BASE_DIR = '/Applications/Unity/Documentation/en'
 
-OUTPUT_SECTIONS = set(('Runtime Classes', 'Runtime Attributes', 'Runtime Enumerations', 'Editor Classes', 'Editor Attributes', 'Editor Enumerations', 'Other Classes'))
+OUTPUT_SECTIONS = set(('Runtime Classes', 'Runtime Interfaces', 'Runtime Enumerations', 'Runtime Attributes', 'Editor Classes', 'Editor Interfaces', 'Editor Enumerations', 'Editor Attributes', 'Other Classes'))
 
 VARIABLES_SECTIONS = set(['Variables', 'Static Variables'])
 MESSAGES_SECTIONS = set(['Messages'])
