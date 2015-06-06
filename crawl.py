@@ -275,7 +275,7 @@ class ScriptReferenceReader(object):
 			paramNames = cls.getFunctionParamNamesFromExample(exampleNode, funcName)
 			return paramNames
 		except Exception, e:
-			logger.error('Could not find function parameter names: {} error={}'.format(funcName, e))
+			logger.warn('Could not find function parameter names: {} error={}'.format(funcName, e))
 			return None
 
 	@classmethod
@@ -292,7 +292,7 @@ class ScriptReferenceReader(object):
 			example = exampleNode[0].text_content().strip().replace('\r\n', '').replace('\n', '')
 			m = re.search(r'\b(%s\s*\(.+?)\s*\{' % re.escape(funcName), example)
 			if not m:
-				raise Exception('Function definition not found in example: ' + funcName)
+				logger.debug('Function definition not found in example: ' + funcName)
 				return None
 			funcDef = m.group(1)
 			parsedFuncDef = cls.parseFuncDef(funcDef, funcName)
