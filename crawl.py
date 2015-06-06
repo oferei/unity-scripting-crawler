@@ -206,7 +206,7 @@ class ScriptReferenceReader(object):
 	def readFunction(self, url, funcName):
 		logger.info('      function: ' + funcName)
 		funcDefs = []
-		for funcDef, funcParamNames in self.iterFuncDefs(url):
+		for funcDef, funcParamNames in self.iterFuncDefs(url, funcName):
 			# fixFuncDef works around bugs in documentation
 			funcDef = self.fixFuncDef(funcDef, url, funcName)
 			try:
@@ -222,7 +222,7 @@ class ScriptReferenceReader(object):
 				logger.error('Could not parse function definition: {} error={}'.format(funcDef, e))
 		return funcDefs
 
-	def iterFuncDefs(self, url):
+	def iterFuncDefs(self, url, funcName):
 		pageFilename = os.path.join(self.refDir, url)
 		pageText = open(pageFilename, 'r').read()
 		page = html.fromstring(pageText)
@@ -233,13 +233,15 @@ class ScriptReferenceReader(object):
 				defFound = True
 				if self.isFunctionGeneric(node):
 					funcDef = funcDef.replace('(', '.<T>(', 1)
-				funcParamNames = self.getFunctionParamNames(self.getFunctionParamSectAfterDefSect(node))
+				topSect = self.getFuncDefSect(node)
+				funcParamNames = self.getParamNames(topSect, funcName)
 				yield funcDef, funcParamNames
 		if not defFound:
 			for node in page.xpath('//h1'):
 				funcDef = node.text_content().strip().replace('\r\n', '').replace('\n', '')
 				if funcDef:
-					funcParamNames = self.getFunctionParamNames(self.getFunctionParamSectWithoutDefSect(node))
+					topSect = self.getHeaderSect(node)
+					funcParamNames = self.getParamNames(topSect, funcName)
 					yield self.convertHeaderToFuncDef(funcDef), funcParamNames
 
 	@classmethod
@@ -252,20 +254,49 @@ class ScriptReferenceReader(object):
 			return False
 
 	@classmethod
-	def getFunctionParamSectAfterDefSect(cls, funcDefNode):
-		paramsTitleNode = funcDefNode.xpath('./parent::div/parent::div[@class="subsection"]/following-sibling::div[@class="subsection"]/h2[text()="Parameters"]')
-		return paramsTitleNode
+	def getFuncDefSect(cls, funcDefNode):
+		funcDefSect = funcDefNode.xpath('./parent::div/parent::div[@class="subsection"]')[0]
+		return funcDefSect
 
 	@classmethod
-	def getFunctionParamSectWithoutDefSect(cls, pageTitleNode):
-		paramsTitleNode = pageTitleNode.xpath('./parent::div[contains(@class, "mb20")]/following-sibling::div[@class="subsection"]/h2[text()="Parameters"]')
-		return paramsTitleNode
+	def getHeaderSect(cls, pageTitleNode):
+		headerSect = pageTitleNode.xpath('./parent::div[contains(@class, "mb20")]')[0]
+		return headerSect
 
 	@classmethod
-	def getFunctionParamNames(cls, paramsTitleNode):
+	def getParamNames(cls, topSect, funcName):
+		try:
+			paramsTitleNode = topSect.xpath('./following-sibling::div[@class="subsection"]/h2[text()="Parameters"]')
+			paramNames = cls.parseParametersSection(paramsTitleNode)
+			if paramNames:
+				return paramNames
+
+			exampleNode = topSect.xpath('./following-sibling::div[@class="subsection"]/pre[@class="codeExampleJS" or @class="codeExampleRaw"]')
+			paramNames = cls.getFunctionParamNamesFromExample(exampleNode, funcName)
+			return paramNames
+		except Exception, e:
+			logger.error('Could not find function parameter names: {} error={}'.format(funcName, e))
+			return None
+
+	@classmethod
+	def parseParametersSection(cls, paramsTitleNode):
 		if paramsTitleNode:
 			paramNames = paramsTitleNode[0].xpath('./following-sibling::table')[0].xpath('.//td[@class="name lbl"]/text()')
 			return paramNames
+		else:
+			return None
+
+	@classmethod
+	def getFunctionParamNamesFromExample(cls, exampleNode, funcName):
+		if exampleNode:
+			example = exampleNode[0].text_content().strip().replace('\r\n', '').replace('\n', '')
+			m = re.search(r'\b(%s\s*\(.+?)\s*\{' % re.escape(funcName), example)
+			if not m:
+				raise Exception('Function definition not found in example: ' + funcName)
+				return None
+			funcDef = m.group(1)
+			parsedFuncDef = cls.parseFuncDef(funcDef, funcName)
+			return [param['name'] for param in parsedFuncDef['params']]
 		else:
 			return None
 
