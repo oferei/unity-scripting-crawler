@@ -4,6 +4,7 @@ from lxml import html
 # from lxml import etree
 import re
 import json
+from itertools import izip
 import pickle
 
 OUTPUT_FILENAME = 'unity.pkl'
@@ -205,11 +206,18 @@ class ScriptReferenceReader(object):
 	def readFunction(self, url, funcName):
 		logger.info('      function: ' + funcName)
 		funcDefs = []
-		for funcDef in self.iterFuncDefs(url):
+		for funcDef, funcParamNames in self.iterFuncDefs(url):
 			# fixFuncDef works around bugs in documentation
 			funcDef = self.fixFuncDef(funcDef, url, funcName)
 			try:
-				funcDefs.append(self.parseFuncDef(funcDef, funcName))
+				parsedFuncDef = self.parseFuncDef(funcDef, funcName)
+				if parsedFuncDef['params'] and parsedFuncDef['params'][0]['name'] is None:
+					if funcParamNames and len(parsedFuncDef['params']) == len(funcParamNames):
+						for param, paramName in izip(parsedFuncDef['params'], funcParamNames):
+							param['name'] = paramName
+					else:
+						logger.warn('Mismatch between function definition and length of parameters section: #params={} funcParamNames={}'.format(len(parsedFuncDef['params']), funcParamNames))
+				funcDefs.append(parsedFuncDef)
 			except Exception, e:
 				logger.error('Could not parse function definition: {} error={}'.format(funcDef, e))
 		return funcDefs
@@ -225,12 +233,14 @@ class ScriptReferenceReader(object):
 				defFound = True
 				if self.isFunctionGeneric(node):
 					funcDef = funcDef.replace('(', '.<T>(', 1)
-				yield funcDef
+				funcParamNames = self.getFunctionParamNames(self.getFunctionParamSectAfterDefSect(node))
+				yield funcDef, funcParamNames
 		if not defFound:
 			for node in page.xpath('//h1'):
 				funcDef = node.text_content().strip().replace('\r\n', '').replace('\n', '')
 				if funcDef:
-					yield self.convertHeaderToFuncDef(funcDef)
+					funcParamNames = self.getFunctionParamNames(self.getFunctionParamSectWithoutDefSect(node))
+					yield self.convertHeaderToFuncDef(funcDef), funcParamNames
 
 	@classmethod
 	def isFunctionGeneric(cls, funcDefNode):
@@ -240,6 +250,24 @@ class ScriptReferenceReader(object):
 			return description and description.startswith('Generic version.')
 		else:
 			return False
+
+	@classmethod
+	def getFunctionParamSectAfterDefSect(cls, funcDefNode):
+		paramsTitleNode = funcDefNode.xpath('./parent::div/parent::div[@class="subsection"]/following-sibling::div[@class="subsection"]/h2[text()="Parameters"]')
+		return paramsTitleNode
+
+	@classmethod
+	def getFunctionParamSectWithoutDefSect(cls, pageTitleNode):
+		paramsTitleNode = pageTitleNode.xpath('./parent::div[contains(@class, "mb20")]/following-sibling::div[@class="subsection"]/h2[text()="Parameters"]')
+		return paramsTitleNode
+
+	@classmethod
+	def getFunctionParamNames(cls, paramsTitleNode):
+		if paramsTitleNode:
+			paramNames = paramsTitleNode[0].xpath('./following-sibling::table')[0].xpath('.//td[@class="name lbl"]/text()')
+			return paramNames
+		else:
+			return None
 
 	@classmethod
 	def convertHeaderToFuncDef(cls, funcDef):
