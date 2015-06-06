@@ -177,13 +177,13 @@ class ScriptReferenceReader(object):
 				if sect.name == 'Inherited members':
 					logger.info('    skipped (inherited)')
 					continue
-			members.update(self.readClassSubSection(sect))
+			members.update(self.readClassSubSection(classLink.name, sect))
 			for subSect in self.iterSections(sect.elem):
 				logger.info('    subsection: {}'.format(subSect.name))
-				members.update(self.readClassSubSection(subSect))
+				members.update(self.readClassSubSection(classLink.name, subSect))
 		return members
 
-	def readClassSubSection(self, subSect):
+	def readClassSubSection(self, className, subSect):
 		if subSect.table is None:
 			return {}
 
@@ -198,17 +198,17 @@ class ScriptReferenceReader(object):
 				# TODO: handle e.g. "this[string]" (Animation page)
 				members[funcName] = None
 			elif subSect.name in FUNCTIONS_SECTIONS or subSect.name in MESSAGES_SECTIONS:
-				members[funcName] = self.readFunction(funcUrl, funcName)
+				members[funcName] = self.readFunction(funcUrl, className, funcName)
 			else:
 				raise Exception('Unknown section: {}'.format(subSect.name))
 		return members
 
-	def readFunction(self, url, funcName):
+	def readFunction(self, url, className, funcName):
 		logger.info('      function: ' + funcName)
 		funcDefs = []
 		for funcDef, funcParamNames in self.iterFuncDefs(url, funcName):
 			# fixFuncDef works around bugs in documentation
-			funcDef = self.fixFuncDef(funcDef, url, funcName)
+			funcDef = self.fixFuncDef(funcDef, url, className, funcName)
 			try:
 				parsedFuncDef = self.parseFuncDef(funcDef, funcName)
 				if parsedFuncDef['params'] and parsedFuncDef['params'][0]['name'] is None:
@@ -309,24 +309,25 @@ class ScriptReferenceReader(object):
 		return funcDef
 
 	@classmethod
-	def fixFuncDef(cls, funcDef, url, funcName):
-		if funcName == 'Vector2' and url == 'Vector4-operator_Vector4.html':
+	def fixFuncDef(cls, funcDef, url, className, funcName):
+		if className == 'Vector4' and funcName == 'Vector2':
 			return 'Vector2()'
-		if funcName == 'Unshift' and url == 'Array.Unshift.html':
+		if className == 'Array' and funcName == 'Unshift':
 			return 'Unshift()'
-		if funcName == 'Font' and url == 'Font.TextureChangedDelegate.html':
+		if className == 'Font' and funcName == 'Font' and url == 'Font.TextureChangedDelegate.html':
 			return 'Font()'
-		if funcName == 'OnStateEnter' and url == 'StateMachineBehaviour.OnStateEnter.html':
-			return 'StateMachineBehaviour.OnStateEnter(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
-		if funcName == 'OnStateExit' and url == 'StateMachineBehaviour.OnStateExit.html':
-			return 'StateMachineBehaviour.OnStateExit(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
-		if funcName == 'OnStateIK' and url == 'StateMachineBehaviour.OnStateIK.html':
-			return 'StateMachineBehaviour.OnStateIK(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
-		if funcName == 'OnStateMove' and url == 'StateMachineBehaviour.OnStateMove.html':
-			return 'StateMachineBehaviour.OnStateMove(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
-		if funcName == 'OnStateUpdate' and url == 'StateMachineBehaviour.OnStateUpdate.html':
-			return 'StateMachineBehaviour.OnStateUpdate(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
-		if funcName == 'OnPreprocessAnimation' and url == 'AssetPostprocessor.OnPreprocessAnimation.html':
+		if className == 'StateMachineBehaviour':
+			if funcName == 'OnStateEnter':
+				return 'StateMachineBehaviour.OnStateEnter(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
+			if funcName == 'OnStateExit':
+				return 'StateMachineBehaviour.OnStateExit(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
+			if funcName == 'OnStateIK':
+				return 'StateMachineBehaviour.OnStateIK(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
+			if funcName == 'OnStateMove':
+				return 'StateMachineBehaviour.OnStateMove(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
+			if funcName == 'OnStateUpdate':
+				return 'StateMachineBehaviour.OnStateUpdate(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
+		if className == 'AssetPostprocessor' and funcName == 'OnPreprocessAnimation':
 			return 'OnPreprocessAnimation()'
 		return funcDef
 
