@@ -208,7 +208,9 @@ class ScriptReferenceReader(object):
 		funcDefs = []
 		for funcDef, funcParamNames in self.iterFuncDefs(url, funcName):
 			# fixFuncDef works around bugs in documentation
-			funcDef = self.fixFuncDef(funcDef, url, className, funcName)
+			fixedFuncDef = self.fixFuncDef(funcDef, url, className, funcName)
+			if fixedFuncDef:
+				funcDef = fixedFuncDef
 			try:
 				parsedFuncDef = self.parseFuncDef(funcDef, funcName)
 				if parsedFuncDef['params'] and parsedFuncDef['params'][0]['name'] is None:
@@ -312,24 +314,90 @@ class ScriptReferenceReader(object):
 	def fixFuncDef(cls, funcDef, url, className, funcName):
 		if className == 'Vector4' and funcName == 'Vector2':
 			return 'Vector2()'
-		if className == 'Array' and funcName == 'Unshift':
+		elif className == 'Array' and funcName == 'Unshift':
 			return 'Unshift()'
-		if className == 'Font' and funcName == 'Font' and url == 'Font.TextureChangedDelegate.html':
+		elif className == 'Font' and funcName == 'Font' and url == 'Font.TextureChangedDelegate.html':
 			return 'Font()'
-		if className == 'StateMachineBehaviour':
+		elif className == 'StateMachineBehaviour':
 			if funcName == 'OnStateEnter':
 				return 'StateMachineBehaviour.OnStateEnter(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
-			if funcName == 'OnStateExit':
+			elif funcName == 'OnStateExit':
 				return 'StateMachineBehaviour.OnStateExit(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
-			if funcName == 'OnStateIK':
+			elif funcName == 'OnStateIK':
 				return 'StateMachineBehaviour.OnStateIK(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
-			if funcName == 'OnStateMove':
+			elif funcName == 'OnStateMove':
 				return 'StateMachineBehaviour.OnStateMove(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
-			if funcName == 'OnStateUpdate':
+			elif funcName == 'OnStateUpdate':
 				return 'StateMachineBehaviour.OnStateUpdate(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
-		if className == 'AssetPostprocessor' and funcName == 'OnPreprocessAnimation':
+		elif className == 'AssetPostprocessor' and funcName == 'OnPreprocessAnimation':
 			return 'OnPreprocessAnimation()'
-		return funcDef
+
+		# missing parameter names
+		elif className == 'AssetPostprocessor' and funcName == 'OnPostprocessAssetbundleNameChanged':
+			return 'OnPostprocessAssetbundleNameChanged(assetPath: string, previousAssetBundleName: string, newAssetBundleName: string)'
+		elif className == 'AssetPostprocessor' and funcName == 'OnPostprocessAudio':
+			return 'OnPostprocessAudio(clip: AudioClip)'
+		elif className == 'AssetPostprocessor' and funcName == 'OnPostprocessSpeedTree':
+			return 'OnPostprocessSpeedTree(go: GameObject)'
+		elif className == 'AssetPostprocessor' and funcName == 'OnPostprocessTexture':
+			return 'OnPostprocessTexture(texture: Texture2D)'
+		elif className == 'MaterialEditor' and funcName == 'LightmapEmissionProperty':
+			return 'LightmapEmissionProperty(abcd: string)'
+		elif className == 'StaticOcclusionCulling' and funcName == 'Compute':
+			return 'Compute(viewCellSize: float, nearClipPlane: float, farClipPlane: float, memoryLimit: int, mode: StaticOcclusionCullingMode)'
+		elif className == 'TextureImporter' and funcName == 'ReadTextureImportInstructions':
+			return 'ReadTextureImportInstructions(instructions: TextureImportInstructions)'
+		elif className == 'Array' and funcName == 'Array':
+			return 'Array(arrayLength: int)'
+		elif className == 'AssetModificationProcessor' and funcName == 'IsOpenForEdit':
+			return 'IsOpenForEdit(assetPath: string, message: string)'
+		elif className == 'AssetModificationProcessor' and funcName == 'OnWillCreateAsset':
+			return 'OnWillCreateAsset(path: string)'
+		elif className == 'AssetModificationProcessor' and funcName == 'OnWillDeleteAsset':
+			return 'OnWillDeleteAsset(assetPath: string, option: RemoveAssetOptions): AssetDeleteResult'
+		elif className == 'AssetModificationProcessor' and funcName == 'OnWillMoveAsset':
+			return 'OnWillMoveAsset(oldPath: string, newPath: string): AssetMoveResult'
+		elif className == 'AssetModificationProcessor' and funcName == 'OnWillSaveAssets':
+			return 'OnWillSaveAssets(paths: string[]): string[]'
+		elif className == 'Hashtable':
+			if funcName == 'Add':
+				return 'Add(key: object, value: object)'
+			elif funcName == 'Contains':
+				return 'Contains(key: object): bool'
+			elif funcName == 'ContainsKey':
+				return 'ContainsKey(key: object): bool'
+			elif funcName == 'ContainsValue':
+				return 'ContainsValue(value: object): bool'
+			elif funcName == 'Remove':
+				return 'Remove(key: object)'
+		elif className == 'Path':
+			if funcName == 'Combine':
+				return 'Combine(path1: String, path2: string): string'
+			elif funcName == 'GetExtension':
+				return 'GetExtension(path: string): string'
+			elif funcName == 'GetFileName':
+				return 'GetFileName(path: string): string'
+			elif funcName == 'GetFileNameWithoutExtension':
+				return 'GetFileNameWithoutExtension(path: string): string'
+		elif className == 'Collider':
+			if funcName == 'OnCollisionEnter':
+				return 'OnCollisionEnter(collisionInfo: Collision)'
+			elif funcName == 'OnTriggerExit':
+				return 'OnTriggerExit(other: Collider)'
+			elif funcName == 'OnTriggerStay':
+				return 'OnTriggerStay(other: Collider)'
+		elif className == 'Collider2D':
+			if funcName == 'OnTriggerExit2D':
+				return 'OnTriggerExit2D(other: Collider2D)'
+			elif funcName == 'OnTriggerStay2D':
+				return 'OnTriggerStay2D(other: Collider2D)'
+		elif className == 'MonoBehaviour':
+			if funcName == 'OnCollisionEnter':
+				return 'OnCollisionEnter(collisionInfo: Collision)'
+			elif funcName == 'OnTriggerStay2D':
+				return 'OnTriggerStay2D(other: Collider2D)'
+
+		return None
 
 	@classmethod
 	def parseFuncDef(cls, funcDef, funcName):
