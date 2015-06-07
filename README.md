@@ -30,6 +30,6 @@ Output file is a pickle with the following hierarchy:
 
 The following sections are retrieved:
 
-* UnityEngine Classes, Attributes and Enumerations
-* UnityEditor Classes, Attributes and Enumerations
+* UnityEngine Classes, Interfaces, Attributes and Enumerations
+* UnityEditor Classes, Interfaces, Attributes and Enumerations
 * Other Classes
