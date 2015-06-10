@@ -402,8 +402,8 @@ class ScriptReferenceReader(object):
 	@classmethod
 	def parseFuncDef(cls, funcDef, funcName):
 		logger.debug('        def: ' + funcDef)
-		#              name .<temp>?    (   params     )   : returnType
-		m = re.search(r'%s(\.<\S+>)?\s*\(\s*([^)]*)\s*\)\s*:?\s*(\S+)?' % re.escape(funcName), funcDef)
+		#              name .<temp>?     (   params     )   : returnType
+		m = re.search(r'%s(\.?<\S+>)?\s*\(\s*([^)]*)\s*\)\s*:?\s*(\S+)?' % re.escape(funcName), funcDef)
 		if not m:
 			raise Exception('Function definition structure does not match: ' + funcDef)
 		template = m.group(1)
