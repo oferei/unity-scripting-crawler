@@ -331,6 +331,8 @@ class ScriptReferenceReader(object):
 				return 'StateMachineBehaviour.OnStateUpdate(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
 		elif className == 'AssetPostprocessor' and funcName == 'OnPreprocessAnimation':
 			return 'OnPreprocessAnimation()'
+		elif className == 'LODGroup' and funcName == 'SetLODs':
+			return 'SetLODs(lods: LOD[])'
 
 		# missing parameter names
 		elif className == 'AssetPostprocessor' and funcName == 'OnPostprocessAssetbundleNameChanged':
