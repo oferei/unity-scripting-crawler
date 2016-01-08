@@ -75,7 +75,8 @@ class ScriptReferenceReader(object):
 		'Media.MediaState': 'WindowsPhone.Media.MediaState',
 		'Packer.Execution': 'Sprites.Packer.Execution',
 		'Asset.States': 'VersionControl.Asset.States',
-		'Message.Severity': 'VersionControl.Message.Severity'
+		'Message.Severity': 'VersionControl.Message.Severity',
+		'PlayerSettings.tvOS': 'PlayerSettings-tvOS'
 	}
 
 	class ClassLink:
