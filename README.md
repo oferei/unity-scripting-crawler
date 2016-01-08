@@ -33,3 +33,7 @@ The following sections are retrieved:
 * UnityEngine Classes, Interfaces, Attributes and Enumerations
 * UnityEditor Classes, Interfaces, Attributes and Enumerations
 * Other Classes
+
+## Requirements
+
+* [lxml](http://lxml.de/installation.html)
