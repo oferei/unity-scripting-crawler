@@ -79,6 +79,10 @@ class ScriptReferenceReader(object):
 		'PlayerSettings.tvOS': 'PlayerSettings-tvOS'
 	}
 
+	UNDOCUMENTED = [
+		['Runtime Classes', 'GameObject', 'FindGameObjectWithTag', 'public static function FindGameObjectWithTag(tag:string): GameObject[];']
+	]
+
 	class ClassLink:
 		def __init__(self, name, category, link, namespace):
 			# logger.debug('toc-link: name={} category={} link={} namespace={}'.format(name, category, link, namespace))
@@ -116,6 +120,7 @@ class ScriptReferenceReader(object):
 	def read(self):
 		self.readClassList()
 		self.readAllPages()
+		self.addUndocumented()
 
 	def readClassList(self):
 		self.classLinks = []
@@ -148,6 +153,19 @@ class ScriptReferenceReader(object):
 		for classLink in self.classLinks:
 			classData = self.readClass(classLink)
 			self.classDataBySection[classLink.sectionName][classLink.name] = classData
+
+	def addUndocumented(self):
+		logger.info('Adding undocumented functions')
+		for sectionName, className, funcName, funcDef in self.UNDOCUMENTED:
+			logger.info('  Adding undocumented function: sectionName={} className={} funcName={}'.format(sectionName, className, funcName))
+			if className not in self.classDataBySection[sectionName]:
+				logger.warn('Undocumented class does not exist: {}'.format(className))
+				self.classDataBySection[sectionName][className] = {}
+			if funcName not in self.classDataBySection[sectionName][className]:
+				# logger.debug('Undocumented function does not exist: {}.{}'.format(className, funcName))
+				self.classDataBySection[sectionName][className][funcName] = []
+			parsedFuncDef = self.parseFuncDef(funcDef, funcName)
+			self.classDataBySection[sectionName][className][funcName].append(parsedFuncDef)
 
 	@classmethod
 	def iterSections(cls, elem):
