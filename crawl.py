@@ -16,7 +16,7 @@ BASE_DIR = '/Applications/Unity/Documentation/en'
 OUTPUT_SECTIONS = set(('Runtime Classes', 'Runtime Interfaces', 'Runtime Enumerations', 'Runtime Attributes', 'Editor Classes', 'Editor Interfaces', 'Editor Enumerations', 'Editor Attributes', 'Other Classes'))
 
 VARIABLES_SECTIONS = set(['Variables', 'Static Variables'])
-MESSAGES_SECTIONS = set(['Messages', 'Delegates'])
+MESSAGES_SECTIONS = set(['Messages', 'Delegates', 'Events'])
 FUNCTIONS_SECTIONS = set(['Constructors', 'Public Functions', 'Static Functions', 'Protected Functions', 'Operators'])
 
 with open(LOG_FILENAME, 'w'): pass
@@ -141,7 +141,7 @@ class ScriptReferenceReader(object):
 				link = self.BUG_WORKAROUNDS[obj['link']]
 			else:
 				link = obj['link']
-			self.classLinks.append(self.ClassLink(name=obj['title'], category=hierarchy[-1], link=link, namespace=hierarchy[-2]))
+			self.classLinks.append(self.ClassLink(name=obj['title'], category=hierarchy[-1], link=link, namespace=hierarchy[1]))
 		if obj['children']:
 			hierarchy.append(obj['title'])
 			for child in obj['children']:
@@ -184,7 +184,11 @@ class ScriptReferenceReader(object):
 	def readClass(self, classLink):
 		logger.info('class: ' + classLink.name)
 		pageFilename = os.path.join(self.refDir, classLink.link) + '.html'
-		pageText = open(pageFilename, 'r').read()
+		try:
+			pageText = open(pageFilename, 'r').read()
+		except Exception, e:
+			logger.error('Could not read class: {} error={}'.format(classLink.name, e))
+			return;
 		page = html.fromstring(pageText)
 		members = {}
 		sectName = ''
