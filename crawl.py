@@ -68,7 +68,7 @@ logger.addHandler(ch)
 
 class ScriptReferenceReader(object):
 
-	CLASS_LIST_JS_FILE = 'ScriptReference/docdata/toc.js'
+	CLASS_LIST_JSON_FILE = 'ScriptReference/docdata/toc.json'
 	REFERENCE_DIR = 'ScriptReference'
 
 	BUG_WORKAROUNDS = {
@@ -113,7 +113,7 @@ class ScriptReferenceReader(object):
 		self.baseDir = baseDir
 		self.classLinks = None
 		self.classDataBySection = None
-		self.classListFile = os.path.join(self.baseDir, self.CLASS_LIST_JS_FILE)
+		self.classListFile = os.path.join(self.baseDir, self.CLASS_LIST_JSON_FILE)
 		self.refDir = os.path.join(self.baseDir, self.REFERENCE_DIR)
 
 	def read(self):
@@ -129,9 +129,7 @@ class ScriptReferenceReader(object):
 		logger.info('# classes={}'.format(len(self.classLinks)))
 
 	def readClassListJson(self):
-		classListJs = open(self.classListFile, 'r').read()
-		# remove bit of javascript code
-		classListJson = classListJs.replace('var toc = ', '')
+		classListJson = open(self.classListFile, 'r').read()
 		return json.loads(classListJson)
 
 	def traverseClassList(self, obj, hierarchy=[]):
