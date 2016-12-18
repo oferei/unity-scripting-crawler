@@ -186,7 +186,7 @@ class ScriptReferenceReader(object):
 			pageText = open(pageFilename, 'r').read()
 		except Exception, e:
 			logger.error('Could not read class: {} error={}'.format(classLink.name, e))
-			return;
+			return {};
 		page = html.fromstring(pageText)
 		members = {}
 		sectName = ''
