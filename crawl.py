@@ -79,7 +79,7 @@ class ScriptReferenceReader(object):
 	}
 
 	UNDOCUMENTED = [
-		['Runtime Classes', 'GameObject', 'FindGameObjectWithTag', 'public static function FindGameObjectWithTag(tag:string): GameObject[];']
+		['Runtime Classes', 'GameObject', 'FindGameObjectWithTag', 'public static GameObject[] FindGameObjectWithTag(string tag);']
 	]
 
 	class ClassLink:
@@ -249,7 +249,7 @@ class ScriptReferenceReader(object):
 		pageText = open(pageFilename, 'r').read()
 		page = html.fromstring(pageText)
 		defFound = False
-		for node in page.xpath('//div[@class="signature-JS sig-block"]'):
+		for node in page.xpath('//div[@class="signature-CS sig-block"]'):
 			funcDef = node.text_content().strip().replace('\r\n', '').replace('\n', '')
 			if funcDef:
 				defFound = True
@@ -340,84 +340,84 @@ class ScriptReferenceReader(object):
 			return 'Font()'
 		elif className == 'StateMachineBehaviour':
 			if funcName == 'OnStateEnter':
-				return 'StateMachineBehaviour.OnStateEnter(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
+				return 'StateMachineBehaviour.OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)'
 			elif funcName == 'OnStateExit':
-				return 'StateMachineBehaviour.OnStateExit(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
+				return 'StateMachineBehaviour.OnStateExit(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)'
 			elif funcName == 'OnStateIK':
-				return 'StateMachineBehaviour.OnStateIK(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
+				return 'StateMachineBehaviour.OnStateIK(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)'
 			elif funcName == 'OnStateMove':
-				return 'StateMachineBehaviour.OnStateMove(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
+				return 'StateMachineBehaviour.OnStateMove(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)'
 			elif funcName == 'OnStateUpdate':
-				return 'StateMachineBehaviour.OnStateUpdate(animator: Animator, animatorStateInfo: AnimatorStateInfo, layerIndex: int)'
+				return 'StateMachineBehaviour.OnStateUpdate(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)'
 		elif className == 'AssetPostprocessor' and funcName == 'OnPreprocessAnimation':
 			return 'OnPreprocessAnimation()'
 		elif className == 'LODGroup' and funcName == 'SetLODs':
-			return 'SetLODs(lods: LOD[])'
+			return 'SetLODs(LOD[] lods)'
 
 		# missing parameter names
 		elif className == 'AssetPostprocessor' and funcName == 'OnPostprocessAssetbundleNameChanged':
-			return 'OnPostprocessAssetbundleNameChanged(assetPath: string, previousAssetBundleName: string, newAssetBundleName: string)'
+			return 'OnPostprocessAssetbundleNameChanged(string assetPath, stringpreviousAssetBundleName, string newAssetBundleName)'
 		elif className == 'AssetPostprocessor' and funcName == 'OnPostprocessAudio':
-			return 'OnPostprocessAudio(clip: AudioClip)'
+			return 'OnPostprocessAudio(AudioClip clip)'
 		elif className == 'AssetPostprocessor' and funcName == 'OnPostprocessSpeedTree':
-			return 'OnPostprocessSpeedTree(go: GameObject)'
+			return 'OnPostprocessSpeedTree(GameObject go)'
 		elif className == 'AssetPostprocessor' and funcName == 'OnPostprocessTexture':
-			return 'OnPostprocessTexture(texture: Texture2D)'
+			return 'OnPostprocessTexture(Texture2D texture)'
 		elif className == 'MaterialEditor' and funcName == 'LightmapEmissionProperty':
-			return 'LightmapEmissionProperty(abcd: string)'
+			return 'LightmapEmissionProperty(int labelIndent)'
 		elif className == 'StaticOcclusionCulling' and funcName == 'Compute':
-			return 'Compute(viewCellSize: float, nearClipPlane: float, farClipPlane: float, memoryLimit: int, mode: StaticOcclusionCullingMode)'
+			return 'Compute(float viewCellSize, float nearClipPlane, float farClipPlane, int memoryLimit, StaticOcclusionCullingMode mode)'
 		elif className == 'TextureImporter' and funcName == 'ReadTextureImportInstructions':
-			return 'ReadTextureImportInstructions(instructions: TextureImportInstructions)'
+			return 'ReadTextureImportInstructions(TextureImportInstructions instructions)'
 		elif className == 'Array' and funcName == 'Array':
-			return 'Array(arrayLength: int)'
+			return 'Array(int arrayLength)'
 		elif className == 'AssetModificationProcessor' and funcName == 'IsOpenForEdit':
-			return 'IsOpenForEdit(assetPath: string, message: string)'
+			return 'IsOpenForEdit(string assetPath, string message)'
 		elif className == 'AssetModificationProcessor' and funcName == 'OnWillCreateAsset':
-			return 'OnWillCreateAsset(path: string)'
+			return 'OnWillCreateAsset(string path)'
 		elif className == 'AssetModificationProcessor' and funcName == 'OnWillDeleteAsset':
-			return 'OnWillDeleteAsset(assetPath: string, option: RemoveAssetOptions): AssetDeleteResult'
+			return 'AssetDeleteResult OnWillDeleteAsset(string assetPath, RemoveAssetOptions option)'
 		elif className == 'AssetModificationProcessor' and funcName == 'OnWillMoveAsset':
-			return 'OnWillMoveAsset(oldPath: string, newPath: string): AssetMoveResult'
+			return 'AssetMoveResult OnWillMoveAsset(string oldPath, string newPath)'
 		elif className == 'AssetModificationProcessor' and funcName == 'OnWillSaveAssets':
-			return 'OnWillSaveAssets(paths: string[]): string[]'
+			return 'string[] OnWillSaveAssets(string[] paths)'
 		elif className == 'Hashtable':
 			if funcName == 'Add':
-				return 'Add(key: object, value: object)'
+				return 'Add(object key, object value)'
 			elif funcName == 'Contains':
-				return 'Contains(key: object): bool'
+				return 'bool Contains(object key)'
 			elif funcName == 'ContainsKey':
-				return 'ContainsKey(key: object): bool'
+				return 'bool ContainsKey(object key)'
 			elif funcName == 'ContainsValue':
-				return 'ContainsValue(value: object): bool'
+				return 'bool ContainsValue(object value)'
 			elif funcName == 'Remove':
-				return 'Remove(key: object)'
+				return 'Remove(object key)'
 		elif className == 'Path':
 			if funcName == 'Combine':
-				return 'Combine(path1: String, path2: string): string'
+				return 'string Combine(String path1, string path2)'
 			elif funcName == 'GetExtension':
-				return 'GetExtension(path: string): string'
+				return 'string GetExtension(string path)'
 			elif funcName == 'GetFileName':
-				return 'GetFileName(path: string): string'
+				return 'string GetFileName(string path)'
 			elif funcName == 'GetFileNameWithoutExtension':
-				return 'GetFileNameWithoutExtension(path: string): string'
+				return 'string GetFileNameWithoutExtension(string path)'
 		elif className == 'Collider':
 			if funcName == 'OnCollisionEnter':
-				return 'OnCollisionEnter(collisionInfo: Collision)'
+				return 'OnCollisionEnter(Collision collisionInfo)'
 			elif funcName == 'OnTriggerExit':
-				return 'OnTriggerExit(other: Collider)'
+				return 'OnTriggerExit(Collider other)'
 			elif funcName == 'OnTriggerStay':
-				return 'OnTriggerStay(other: Collider)'
+				return 'OnTriggerStay(Collider other)'
 		elif className == 'Collider2D':
 			if funcName == 'OnTriggerExit2D':
-				return 'OnTriggerExit2D(other: Collider2D)'
+				return 'OnTriggerExit2D(Collider2D other)'
 			elif funcName == 'OnTriggerStay2D':
-				return 'OnTriggerStay2D(other: Collider2D)'
+				return 'OnTriggerStay2D(Collider2D other)'
 		elif className == 'MonoBehaviour':
 			if funcName == 'OnCollisionEnter':
-				return 'OnCollisionEnter(collisionInfo: Collision)'
+				return 'OnCollisionEnter(Collision collisionInfo)'
 			elif funcName == 'OnTriggerStay2D':
-				return 'OnTriggerStay2D(other: Collider2D)'
+				return 'OnTriggerStay2D(Collider2D other)'
 
 		return None
 
@@ -447,20 +447,12 @@ class ScriptReferenceReader(object):
 
 	@classmethod
 	def parseParam(cls, param):
-		try:
-			paramName, type_ = re.split(r'\s*:\s*', param)
-		except Exception, e:
-			m = re.search(r'^([\w\[\]]+)$', param)
-			if m: # parameter type without name
-				paramName = None
-				type_ = m.group(1)
-			else:
-				raise Exception('Could not parse function param: ' + param)
-		typeParts = re.split(r'\s*=\s*', type_)
-		if len(typeParts) == 2:
-			type_, default = typeParts
-		else:
-			default = None
+		m = re.search(r'^(?:(?:out|ref|params) )?([\w\.,<>\[\]]+)(?:\s+(\w+)(?:\s*=\s*([\w\-\.\"]+))?)?$', param)
+		if not m:
+			raise Exception('Could not parse function param: ' + param)
+		type_ = m.group(1)
+		paramName = m.group(2)
+		default = m.group(3)
 		return {
 			'name': paramName,
 			'type': type_,
