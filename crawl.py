@@ -447,7 +447,7 @@ class ScriptReferenceReader(object):
 
 	@classmethod
 	def parseParam(cls, param):
-		m = re.search(r'^(?:(?:out|ref|params) )?([\w\.,<>\[\]]+)(?:\s+(\w+)(?:\s*=\s*([\w\-\.\"]+))?)?$', param)
+		m = re.search(r'^((?:(?:out|ref|params) )?[\w\.,<>\[\]]+)(?:\s+(\w+)(?:\s*=\s*([\w\-\.\"]+))?)?$', param)
 		if not m:
 			raise Exception('Could not parse function param: ' + param)
 		type_ = m.group(1)
