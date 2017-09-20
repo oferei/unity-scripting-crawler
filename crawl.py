@@ -15,9 +15,9 @@ BASE_DIR = '/Applications/Unity/Documentation/en'
 
 OUTPUT_SECTIONS = set(('Runtime Classes', 'Runtime Interfaces', 'Runtime Enumerations', 'Runtime Attributes', 'Editor Classes', 'Editor Interfaces', 'Editor Enumerations', 'Editor Attributes', 'Other Classes'))
 
-VARIABLES_SECTIONS = set(['Variables', 'Static Variables'])
+VARIABLES_SECTIONS = set(['Properties', 'Static Properties'])
 MESSAGES_SECTIONS = set(['Messages', 'Delegates', 'Events'])
-FUNCTIONS_SECTIONS = set(['Constructors', 'Public Functions', 'Static Functions', 'Protected Functions', 'Operators'])
+FUNCTIONS_SECTIONS = set(['Constructors', 'Public Methods', 'Static Methods', 'Protected Methods', 'Operators'])
 
 with open(LOG_FILENAME, 'w'): pass
 import logging
@@ -194,7 +194,7 @@ class ScriptReferenceReader(object):
 		for sect in self.iterSections(content):
 			logger.info('  section: {}'.format(sect.name or '-'))
 			if EXCLUDE_INHERITED:
-				if sect.name == 'Inherited members':
+				if sect.name == 'Inherited Members':
 					logger.info('    skipped (inherited)')
 					continue
 			members.update(self.readClassSubSection(classLink.name, sect))
