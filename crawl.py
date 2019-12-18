@@ -11,9 +11,9 @@ OUTPUT_FILENAME = 'unity.pkl'
 LOG_FILENAME = 'crawl.log'
 EXCLUDE_INHERITED = True
 
-BASE_DIR = '/Applications/Unity/Documentation/en'
+BASE_DIR = '/Applications/Unity/Hub/Editor/2019.2.16f1/Documentation/en'
 
-OUTPUT_SECTIONS = set(('Runtime Classes', 'Runtime Interfaces', 'Runtime Enumerations', 'Runtime Attributes', 'Editor Classes', 'Editor Interfaces', 'Editor Enumerations', 'Editor Attributes', 'Other Classes'))
+OUTPUT_SECTIONS = set(('Runtime Classes', 'Runtime Interfaces', 'Runtime Enumerations', 'Runtime Attributes', 'Editor Classes', 'Editor Interfaces', 'Editor Enumerations', 'Editor Attributes', 'Other Classes', 'Other Enumerations'))
 
 VARIABLES_SECTIONS = set(['Properties', 'Static Properties'])
 MESSAGES_SECTIONS = set(['Messages', 'Delegates', 'Events'])
@@ -93,9 +93,9 @@ class ScriptReferenceReader(object):
 		@property
 		def sectionName(self):
 			logger.debug('class info: namespace={} category={}'.format(self.namespace, self.category))
-			if self.namespace.startswith('UnityEngine'):
+			if self.namespace == 'UnityEngine' or self.namespace == 'Unity':
 				namespace = 'Runtime'
-			elif self.namespace.startswith('UnityEditor'):
+			elif self.namespace == 'UnityEditor':
 				namespace = 'Editor'
 			elif self.namespace == 'Other':
 				namespace = 'Other'
@@ -134,6 +134,8 @@ class ScriptReferenceReader(object):
 
 	def traverseClassList(self, obj, hierarchy=[]):
 		# logger.debug('traverse: link={} title={} children={} hierarchy={}'.format(obj['link'], obj['title'], 'yes' if obj['children'] else 'no', hierarchy))
+		if obj['title'] == 'Assemblies':
+			return # skip Assemblies submenu
 		if obj['link'] != 'null' and obj['link'] != 'toc':
 			if obj['link'] in self.BUG_WORKAROUNDS:
 				link = self.BUG_WORKAROUNDS[obj['link']]

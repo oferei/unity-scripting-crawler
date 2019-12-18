@@ -28,6 +28,8 @@ Output file is a pickle with the following hierarchy:
 
 ## Retrieved Sections
 
+[This section is out of date]
+
 The following sections are retrieved:
 
 * UnityEngine Classes, Interfaces, Attributes and Enumerations
